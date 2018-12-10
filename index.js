@@ -1,7 +1,7 @@
 const changeCase = require("change-case");
 const parseToken = require("./parseToken");
 
-//TODO: Ghosting, existing var checking
+//TODO: existing var checking, loop
 
 const def = {	
     camelCase: changeCase.camel,
@@ -52,6 +52,11 @@ function resolveToken(tokens, proposedValue, opts, result, fromText){
                 result = resolveToken(t,true,opts,result,false);
             }
             return result;
+            
+        case '#%#if':
+            result[tokens[tokens.length-1][1]] = proposedValue;
+            tokens.pop();
+            return result;
         
         default:
             return result;
@@ -65,6 +70,7 @@ module.exports = function(opts){
     let remaining = content;
     let tokenStack = [];
     let result = {};
+    let ghostingFlag = undefined;
     while(tokens.length>0){
         const token = tokens[0];
         // console.log('######\n######\n######\n######\n######\n');
@@ -74,13 +80,20 @@ module.exports = function(opts){
         // console.log('@@@@@@@@@@@@');
         // console.log([remaining]);
         // console.log(result);
+        
+        if(ghostingFlag && token[0] != ghostingFlag) {
+            tokens.shift();
+            continue;
+        }else ghostingFlag = undefined;
+        
         switch (token[0]) {
             case 'text':
                 let k = remaining.indexOf(token[1].trim());
                 if(k<0){
                     if(tokenStack[tokenStack.length-1][0]=='#if'){
-                        result[tokenStack[tokenStack.length-1][1]] = false;
-                        tokens.shift();
+                        tokenStack.push(['#%#if']);
+                        result = resolveToken(tokenStack,false,opts.inverseHelper,result,true);
+                        ghostingFlag = '/if';
                         continue;
                     }else
                         throw new Error('text not found: '+token[1]);

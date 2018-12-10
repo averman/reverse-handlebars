@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "change-case": "^3.0.2"
+    "change-case": "^3.0.2",
+    "handlebars": "^4.0.12"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
