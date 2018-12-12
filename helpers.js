@@ -15,19 +15,21 @@ const def = {
 	kebabCase: changeCase.camel,
 	properCase: changeCase.camel,
 	pascalCase: changeCase.camel
-}
+} 
 
 const Helpers = {
     items: {},
     add: function(helper){
         this.items[helper.helperName] = helper;  
     },
-    get: function(helperName, varname, chain){
+    get: function(helperName, varname,current){
         if(!this.items[helperName]) return this.get('null',varname);
         let res = Object.assign({},this.items[helperName]);
+        if(current)res.path = current.path;
+        else res.path='';
+        res.addPath = function(key){return (this.path.length>0?this.path+'.':'')+key;};
         res.varname = varname;
-        if(chain && chain.chain)
-            res = chain.chain(res);
+        if(res && res.chain)res.chain();
         return res;
     }
 }
@@ -35,7 +37,7 @@ const Helpers = {
 const nullHelper = {
     helperName: 'null',
     varFound: function(r,n,v){
-        r.push([n,v]);
+        r.push([this.addPath(n),v]);
     }
     // textFound(result, text)
     // textNotFound(result, text)
@@ -49,45 +51,49 @@ const nullHelper = {
 const ifHelper = {
     helperName: 'if',
     textFound: function(r,t){
-        r.push([this.varname,true]);
+        r.push([this.addPath(this.varname),true]);
     },
     textNotFound: function(r,t){
-        r.push([this.varname,false]);
+        r.push([this.addPath(this.varname),false]);
         
     },
     varFound: function(r,n,v){
-        r.push([this.varname,true]);
-        r.push([n,v]);
+        r.push([this.addPath(this.varname),true]);
+        r.push([this.addPath(n),v]);
     }
 }
 
 const withHelper = {
     helperName: 'with',
     varFound: function(r,n,v){
-        r.push([this.varname+'.'+n,v]);
+        r.push([this.addPath(n),v]);
     },
-    chain: function(helper){
-        helper.varname = this.varname+'.'+helper.varname;
-        return helper;
+    chain: function(){
+        this.path = this.addPath(this.varname);
     }
 }
 
 const eachHelper = {
     helperName: 'each',
     varFound: function(r,n,v){
-        r.push([this.varname+'.'+this.idx+'.'+n,v]);
+        r.push([this.addPath(n),v]);
     },
-    chain: function(helper){
-        helper.varname = this.varname+'.'+this.idx+'.'+helper.varname;
-        return helper;
+    chain: function(){
+        this.path = this.addPath(this.varname);
     },
     idx: 0,
     init: function(tokens, content, ctx){
+        if(!this.basepath){
+            this.basepath = this.path;
+            this.path = this.addPath(this.idx);
+        }
         this.tokens = Array.from(tokens);
     },
     end: function(tokens, remaining, result, ctx){
         if(remaining.trim().length>0){
             this.idx++;
+            this.path = this.basepath;
+            this.path = this.addPath(this.idx);
             // console.log('%%%%'+this.idx);
             // console.log(remaining);
             let res = result.concat(ctx.resolve(this.tokens,remaining,this));

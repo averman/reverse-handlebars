@@ -1,5 +1,5 @@
 var assert = require('assert');
-var reverse = require('../index');
+var hbp = require('../index');
 var loader = require("./fileLoader.js")
 var handlebars = require("handlebars");
 var changeCase = require('change-case');
@@ -30,7 +30,9 @@ describe('Reverse Handle', function() {
   const datas = {
     template1 : "./test/templates/test_template_1.hbs",
     with1: './test/templates/with.hbs',
-    each1: './test/templates/each.hbs'
+    with2: './test/templates/with2.hbs',
+    each1: './test/templates/each.hbs',
+    part: './test/templates/partials.hbs'
   }
       
   var beforeVar = {
@@ -49,10 +51,9 @@ describe('Reverse Handle', function() {
         type: 'React.Component',
         name: 'test'
       }
-      const template = handlebars.compile(beforeVar.template1);
-      const content = template(data1);
-      const data = reverse.reverse({template: beforeVar.template1, content: content});
-      assert.deepStrictEqual(data1,data);
+      const content = hbp.apply(beforeVar.template1,data1);
+      const data = hbp.reverse(beforeVar.template1, content);
+      assert.deepStrictEqual(data,data1);
     });
     
     it('should get the correct data from content files, case 2: negative if', function() {
@@ -62,13 +63,12 @@ describe('Reverse Handle', function() {
         type: 'React.Component',
         name: 'test'
       }
-      const template = handlebars.compile(beforeVar.template1);
-      const content = template(data1);
-      const data = reverse.reverse({template: beforeVar.template1, content: content});
-      assert.deepStrictEqual(data1,data);
+      const content = hbp.apply(beforeVar.template1,data1);
+      const data = hbp.reverse(beforeVar.template1, content);
+      assert.deepStrictEqual(data,data1);
     });
     
-    it('should get the correct data from content files, case 2: with', function() {
+    it('should get the correct data from content files, case 3: with', function() {
       let data1= {
         title: 'Title',
         story: {
@@ -76,16 +76,16 @@ describe('Reverse Handle', function() {
           body: {
             header: 'HEADER',
             content: 'content here'
-          }
+          },
+          flag: true
         }
       }
-      const template = handlebars.compile(beforeVar.with1);
-      const content = template(data1);
-      const data = reverse.reverse({template: beforeVar.with1, content: content});
-      assert.deepStrictEqual(data1,data);
+      const content = hbp.apply(beforeVar.with1,data1);
+      const data = hbp.reverse(beforeVar.with1, content);
+      assert.deepStrictEqual(data,data1);
     });
     
-    it('should get the correct data from content files, case 2: each', function() {
+    it('should get the correct data from content files, case 4: each', function() {
       let data1= {
         data:[
           {
@@ -114,10 +114,45 @@ describe('Reverse Handle', function() {
           }
         ]
       }
-      const template = handlebars.compile(beforeVar.each1);
-      const content = template(data1);
-      const data = reverse.reverse({template: beforeVar.each1, content: content});
-      assert.deepStrictEqual(data1,data);
+      const content = hbp.apply(beforeVar.each1,data1);
+      const data = hbp.reverse(beforeVar.each1, content);
+      assert.deepStrictEqual(data,data1);
+    });
+    
+    it('should get the correct data from content files, case 5: custom helpers', function() {
+      let data1= {
+        title: 'Title',
+        story: {
+          intro: 'intro_1',
+          body: {
+            header: 'HEADER',
+            content: 'content here'
+          }
+        }
+      }
+      const headerHelper = {
+        helperName: 'header',
+        handlebars: v=>'<h1>'+v+'</h1>',
+        map: v=>v.substr(4,v.length-9)
+      }
+      hbp.registerHelper(headerHelper);
+      const content = hbp.apply(beforeVar.with2, data1);
+      const data = hbp.reverse(beforeVar.with2, content);
+      assert.deepStrictEqual(data,data1);
+    });
+    
+    it('should get the correct data from content files, case 6: partials', function() {
+      let data1= {
+        test : {
+          testParam2: 'b'
+        }
+      }
+      const partial = '### {{testParam1}} @@@ {{testParam2}} $$$';
+      hbp.registerPartial('testPartial',partial);
+      const content = hbp.apply(beforeVar.part, data1);
+      // console.log(content);
+      const data = hbp.reverse(beforeVar.part, content);
+      assert.deepStrictEqual(data,data1);
     });
     
   });

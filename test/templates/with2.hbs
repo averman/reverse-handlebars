@@ -1,16 +1,13 @@
 <div class="entry">
   <h1>{{title}}</h1>
   {{#with story}}
-    <div class="intro">{{{intro}}}</div><!-- start if -->
-    {{#if flag}}
+    <div class="intro">{{{intro}}}</div>
     <div class="body">{{#with body}}
-      <h1><a>{{header}}</a></h1>
+      <a>{{{header header}}}</a>
       <p>{{content}}</p>
       {{/with}}
       <!-- end body -->
-    {{/if}}
     </div>
-    <!-- end if -->
   {{/with}}
   <!-- end story -->
 </div>
