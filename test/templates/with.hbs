@@ -1,0 +1,13 @@
+<div class="entry">
+  <h1>{{title}}</h1>
+  {{#with story}}
+    <div class="intro">{{{intro}}}</div>
+    <div class="body">{{#with body}}
+      <h1><a>{{header}}</a></h1>
+      <p>{{content}}</p>
+      {{/with}}
+      <!-- end body -->
+    </div>
+  {{/with}}
+  <!-- end story -->
+</div>

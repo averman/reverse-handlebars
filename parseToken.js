@@ -15,7 +15,7 @@ module.exports = function(template){
             if(c=='{'){
                 if(textStack.length>0){
                     const text = textStack.join('');
-                    tokens.push(['text',text,range[0],range[1]]);
+                    tokens.push(['text',text]);
                     range = [range[1]+1,range[1]];
                     textStack = [];
                 }
@@ -34,7 +34,7 @@ module.exports = function(template){
                     const text = textStack.join('').trim();
                     let esc = escapeStack.join('').trim();
                     if(esc == '')esc='var';
-                    tokens.push([esc,text,range[0],range[1]]);
+                    tokens.push([esc,text]);
                     range = [range[1]+1,range[1]];
                     textStack = [];
                     escapeStack = [];
@@ -78,7 +78,7 @@ module.exports = function(template){
     if(closeStack.length == 0){
         if( textStack.length>0){
             const text = textStack.join('');
-            tokens.push(['text',text,range[0],range[1]]);
+            tokens.push(['text',text,range[0]]);
             range = [range[1]+1,range[1]];
         }
     }
@@ -87,12 +87,36 @@ module.exports = function(template){
     while(i<tokens.length-1){
         if(tokens[i][0] == 'text' && tokens[i+1][0]=='text'){
             tokens[i][1] += tokens[i+1][1];
-            tokens[i][3] += tokens[i+1][1].length;
+            // tokens[i][3] += tokens[i+1][1].length;
             for(let j=i+1; j<tokens.length-1; j++)
                 tokens[j]=tokens[j+1];
             tokens.pop();
         }else
             i++;
     }
-    return tokens;
+    let tokenStack = [];
+    let result = [];
+    //prepare tokenization
+    while(tokens.length>0){
+        const token = tokens[0]; // [type, varname, parent, [children]]
+        if(tokenStack.length == 0){
+            token.push(null);
+            result.push(token);
+        }else{ 
+            token.push(tokenStack[tokenStack.length - 1]);
+            tokenStack[tokenStack.length-1][3].push(token);
+        }
+        if(token[0].startsWith('#')){
+            token.push([]);
+            tokenStack.push(token);
+        }else if(token[0].startsWith('/')){
+            let tkn = tokenStack.pop();
+            if(tkn[0].substr(1) != token[0].substr(1))
+                throw new Error('unexpected '+token[0]+' expect: /'+tkn[0].substr(1));
+        }
+        tokens.shift();
+    }
+    if(tokenStack > 0)
+        throw new Error('unterminated block '+tokenStack.pop());
+    return result;
 }

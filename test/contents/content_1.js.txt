@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
@@ -15,6 +16,11 @@ export class Test extends React.Component {
   render() {
     return (
       <div>
+        <Helmet>
+          <title>Test</title>
+          <meta name="description" content="Description of Test" />
+        </Helmet>
+        {/* Separator */}
         <FormattedMessage {...messages.header} />
       </div>
     );
