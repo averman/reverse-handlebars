@@ -4,6 +4,24 @@ const resolve = require("./resolveBlock")
 const utils = require("./utils.js")
 const handlebars = require("handlebars");
 const flatten = require('flat');
+const changeCase = require("change-case"); 
+
+const def = {	
+    camelCase: [changeCase.camel,changeCase.camel],
+	snakeCase: [changeCase.camel,changeCase.snake],
+	dotCase: [changeCase.camel,changeCase.dot],
+	pathCase: [changeCase.camel,changeCase.path],
+	lowerCase: [changeCase.camel,changeCase.lower],
+	upperCase: [changeCase.camel,changeCase.upper],
+	sentenceCase: [changeCase.camel,changeCase.sentence],
+	constantCase: [changeCase.camel,changeCase.constant],
+	titleCase: [changeCase.camel,changeCase.title],
+	dashCase: [changeCase.camel,changeCase.dash],
+	kabobCase: [changeCase.camel,changeCase.kebab],
+	kebabCase: [changeCase.camel,changeCase.kebab],
+	properCase: [changeCase.camel,changeCase.proper],
+	pascalCase: [changeCase.camel,changeCase.pascal]
+}
 
 let handlePlus = { 
     reverse: function(template,content){
@@ -61,6 +79,20 @@ let handlePlus = {
         this.helpers.add(partial);
     }
 }
+
+const b64helper = {
+    helperName: 'b64',
+    map: function(x){
+        return Buffer.from(x.toString()).toString('base64')
+    },
+    handlebars: function(x){
+        return Buffer.from(x.toString(),'base64').toString('ascii')
+    }
+}
+handlePlus.registerHelper(b64helper);
+Object.keys(def).map(k=>{
+    handlePlus.registerHelper( { helperName: k, map: def[k][0], handlebars: def[k][1]} )
+})
 
 module.exports = handlePlus;
 

@@ -32,7 +32,8 @@ describe('Reverse Handle', function() {
     with1: './test/templates/with.hbs',
     with2: './test/templates/with2.hbs',
     each1: './test/templates/each.hbs',
-    part: './test/templates/partials.hbs'
+    part: './test/templates/partials.hbs',
+    b64: './test/templates/b64test.hbs'
   }
       
   var beforeVar = {
@@ -152,6 +153,22 @@ describe('Reverse Handle', function() {
       const content = hbp.apply(beforeVar.part, data1);
       // console.log(content);
       const data = hbp.reverse(beforeVar.part, content);
+      assert.deepStrictEqual(data,data1);
+    });
+    
+    it('should get the correct data from content files, case 6: b64', function() {
+      let data1= {
+        data : {
+          content: 'dGVzdDEyM3t0ZXN0MTIzfQ==',
+          footer: '-----------'
+        },
+        version: '1'
+      }
+      const partial = '### {{testParam1}} @@@ {{testParam2}} $$$';
+      hbp.registerPartial('testPartial',partial);
+      const content = hbp.apply(beforeVar.b64, data1);
+      // console.log(content);
+      const data = hbp.reverse(beforeVar.b64, content);
       assert.deepStrictEqual(data,data1);
     });
     

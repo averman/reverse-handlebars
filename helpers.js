@@ -1,21 +1,4 @@
-const changeCase = require("change-case");
 
-const def = {	
-    camelCase: changeCase.camel,
-	snakeCase: changeCase.camel,
-	dotCase: changeCase.camel,
-	pathCase: changeCase.camel,
-	lowerCase: changeCase.camel,
-	upperCase: changeCase.camel,
-	sentenceCase: changeCase.camel,
-	constantCase: changeCase.camel,
-	titleCase: changeCase.camel,
-	dashCase: changeCase.camel,
-	kabobCase: changeCase.camel,
-	kebabCase: changeCase.camel,
-	properCase: changeCase.camel,
-	pascalCase: changeCase.camel
-} 
 
 const Helpers = {
     items: {},
@@ -109,9 +92,6 @@ Helpers.add(nullHelper);
 Helpers.add(ifHelper);
 Helpers.add(withHelper);
 Helpers.add(eachHelper);
-Object.keys(def).map(k=>{
-    Helpers.add( { helperName: k, map: def[k]} )
-})
 
 // console.log(Helpers.items);
 
