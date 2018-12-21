@@ -29,6 +29,8 @@ describe('Reverse Handle', function() {
   
   const datas = {
     template1 : "./test/templates/test_template_1.hbs",
+    template2 : "./test/templates/container.hbs",
+    content1 : "./test/contents/index.js",
     with1: './test/templates/with.hbs',
     with2: './test/templates/with2.hbs',
     each1: './test/templates/each.hbs',
@@ -156,7 +158,7 @@ describe('Reverse Handle', function() {
       assert.deepStrictEqual(data,data1);
     });
     
-    it('should get the correct data from content files, case 6: b64', function() {
+    it('should get the correct data from content files, case 7: b64', function() {
       let data1= {
         data : {
           content: 'dGVzdDEyM3t0ZXN0MTIzfQ==',
@@ -170,6 +172,14 @@ describe('Reverse Handle', function() {
       // console.log(content);
       const data = hbp.reverse(beforeVar.b64, content);
       assert.deepStrictEqual(data,data1);
+    });
+    
+    it('should get the correct data from inline cases', function() {
+      assert.equal(hbp.reverse('../react-boilerplate/app/containers/{{name}}/index.js', '../react-boilerplate/app/containers/App/index.js').name,'App');
+    });
+    
+    it('should throw error on text not found',function(){
+      assert.throws(function(){hbp.reverse(beforeVar.template2,beforeVar.content1)},/text not found:.*/)
     });
     
   });

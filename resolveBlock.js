@@ -12,6 +12,7 @@ function resolveBlock(tokens, content, helper){
             let k = remaining.indexOf(token[1].trim());
             if(k<0){
                 if(helper.textNotFound)helper.textNotFound(result, token[1].trim(),remaining);
+                else throw new Error('text not found: '+token[1]);
             }else{
                 let b = remaining.substring(0,k);
                 let proposedValue = b.trim();
