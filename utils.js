@@ -27,7 +27,7 @@ const assignTo = function(obj, key, value){
 
 const convertArray = function(obj){
     for(let oi in obj){
-        if(typeof obj[oi]!='object')continue;
+        if(!obj[oi] || typeof obj[oi]!='object')continue;
         const oKey = Object.keys(obj[oi]);
         let isArray = true;
         for(let i =0; i<oKey.length; i++)if(i != oKey[i])isArray = false;

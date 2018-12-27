@@ -5,11 +5,15 @@ function resolveBlock(tokens, content, helper){
     let remaining = content;
     let tokenStack = [];
     let tokenIdx = 0;
+    let done = false;
     if(helper.init)helper.init(tokens, content, this);
-    while(tokenIdx<tokens.length){
-        const token = tokens[tokenIdx];
+    while(!done){
+        let token = tokens[tokenIdx];
+        if(tokenIdx>=tokens.length && tokenStack.length>0){
+            token=['text',''];
+        }
         if(token[0] == 'text'){
-            let k = remaining.indexOf(token[1].trim());
+            let k = tokenIdx<tokens.length?remaining.indexOf(token[1].trim()):remaining.length;
             if(k<0){
                 if(helper.textNotFound)helper.textNotFound(result, token[1].trim(),remaining);
                 else throw new Error('text not found: '+token[1]);
@@ -48,18 +52,32 @@ function resolveBlock(tokens, content, helper){
                             if(helper.varFound)helper.varFound(result, ts[1], proposedValue);
                         }
                     }else{
-                        let newHelper = this.helpers.get(ts[0].substr(1),ts[1],helper);
-                        let blockResult = this.resolve(ts[3],proposedValue,newHelper);
-                        result = result.concat( blockResult ); 
+                        if(ts[0].charAt(0) == '/'){
+                            
+                        }else{
+                            let newHelper = this.helpers.get(ts[0].substr(1),ts[1],helper);
+                            let blockResult = this.resolve(ts[3],proposedValue,newHelper);
+                            result = result.concat( blockResult ); 
+                        }
                     }
                 }
             }
-            remaining = remaining.substr(k+token[1].trim().length);
+            if(tokenIdx<tokens.length)
+                remaining = remaining.substr(k+token[1].trim().length);
         }else{
             tokenStack.push(token);
         }
         tokenIdx++;
+        // console.log(tokenIdx);
+        // console.log(tokens.length);
+        // console.log(tokenStack);
+        if(tokenIdx>=tokens.length && tokenStack.length==0){
+            done=true;
+            // console.log('DONE!')
+        }
     }
+    // console.log("with helper : "+helper.helperName+" >>>> "+helper.varname);
+    // console.log(remaining);
     if(helper.end)result = helper.end(tokens, remaining, result, this);
     // console.log("with helper : "+helper.helperName+" >> "+helper.varname);
     // console.log(result);

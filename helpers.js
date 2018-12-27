@@ -33,16 +33,19 @@ const nullHelper = {
 
 const ifHelper = {
     helperName: 'if',
+    value: true,
     textFound: function(r,t){
         r.push([this.addPath(this.varname),true]);
     },
     textNotFound: function(r,t){
+        this.value = false;
         r.push([this.addPath(this.varname),false]);
-        
     },
     varFound: function(r,n,v){
-        r.push([this.addPath(this.varname),true]);
-        r.push([this.addPath(n),v]);
+        if(this.value){
+            r.push([this.addPath(this.varname),true]);
+            r.push([this.addPath(n),v]);
+        }
     }
 }
 

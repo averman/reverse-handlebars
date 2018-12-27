@@ -182,6 +182,11 @@ describe('Reverse Handle', function() {
       assert.throws(function(){hbp.reverse(beforeVar.template2,beforeVar.content1)},/text not found:.*/)
     });
     
+    it('should handle trivial case',function(){
+      const data = hbp.reverse("{{test}}", "aaaaa");
+      assert.deepEqual(data,{test:'aaaaa'});
+    });
+    
   });
   
 });
