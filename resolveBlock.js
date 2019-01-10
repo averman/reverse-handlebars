@@ -1,5 +1,7 @@
 
 function resolveBlock(tokens, content, helper){
+    // console.log("with helper : "+helper.helperName+" >> "+helper.varname);
+    // console.log(tokens);
     helper = helper || this.helpers.get('null',null);
     let result = [];
     let remaining = content;
@@ -9,6 +11,8 @@ function resolveBlock(tokens, content, helper){
     if(helper.init)helper.init(tokens, content, this);
     while(!done){
         let token = tokens[tokenIdx];
+        // console.log("evaluating token",token[0],token[1]);
+        // console.log("remaining: ",remaining);
         if(tokenIdx>=tokens.length && tokenStack.length>0){
             token=['text',''];
         }
@@ -45,11 +49,15 @@ function resolveBlock(tokens, content, helper){
                                     result.push([helper.addPath(r[0]),r[1]]);
                             }
                         }else{
+                            let temp;
                             if(keys.length>1 && this.helpers.get(keys[0])){
-                                proposedValue = this.helpers.get(keys.shift()).map(proposedValue);
-                                ts[1]=keys.join(' ');
+                                proposedValue = this.helpers.get(keys[0]).map(proposedValue);
+                                temp = ts[1];
+                                ts[1]=keys[1];
+                                // ts[1]=keys.join(' ');
                             }
                             if(helper.varFound)helper.varFound(result, ts[1], proposedValue);
+                            if(temp)ts[1]=temp;
                         }
                     }else{
                         if(ts[0].charAt(0) == '/'){

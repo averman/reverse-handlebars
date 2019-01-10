@@ -91,10 +91,28 @@ const eachHelper = {
     }
 }
 
+const noopHelper = {
+    helperName: 'noop',
+    // varFound: function(r,n,v)
+    // textFound(result, text)
+    // textNotFound(result, text)
+    // varFound(result, name, value)
+    // chain(newHelper)
+    // init(tokens, content, context)
+    // end(tokens, content, result, context)
+    map: function(value){
+        return undefined;
+    },
+    handlebars: function(x){
+        return '';
+    }
+}
+
 Helpers.add(nullHelper);
 Helpers.add(ifHelper);
 Helpers.add(withHelper);
 Helpers.add(eachHelper);
+Helpers.add(noopHelper);
 
 // console.log(Helpers.items);
 

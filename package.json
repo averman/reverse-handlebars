@@ -1,6 +1,6 @@
 {
   "name": "reversible-handlebars",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "reverse file and handlebars template to data",
   "main": "index.js",
   "scripts": {

@@ -184,7 +184,9 @@ describe('Reverse Handle', function() {
     
     it('should handle trivial case',function(){
       const data = hbp.reverse("{{test}}", "aaaaa");
+      const data2 = hbp.reverse("{{noop test}}aaa{{test}}aaa", "aaabaaa");
       assert.deepEqual(data,{test:'aaaaa'});
+      assert.deepEqual(data2,{test: 'b'});
     });
     
   });

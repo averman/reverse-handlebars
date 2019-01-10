@@ -8,7 +8,8 @@ const assignTo = function(obj, key, value){
             if(obj[ckey]){
                 if(obj[ckey] != value) throw new Error('inconsistent result on '+key+': '+obj[ckey]+' != '+value);
             }else{
-                obj[ckey] = value;
+                if(typeof value != 'undefined')
+                    obj[ckey] = value;
             }
         }else{
             if(obj[ckey]){
